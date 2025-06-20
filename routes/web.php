@@ -4,30 +4,34 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\TicketController;
+use App\Http\Controllers\MessageController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+    return Inertia::render('Welcome');
+})->name('welcome');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/Ticket-User', [TicketController::class, 'create'])->name('ticket.create');
+    Route::get('/Ticket-Agent', [TicketController::class, 'edit'])->name('ticket.agent');
+    Route::get('/Ticket-User/ticket', [TicketController::class, 'show'])->name('ticket.user');
+    Route::post('/Ticket-User/store', [TicketController::class, 'store'])->name('ticket.store');
+    Route::post('/Ticket-Agent/update/{id}/{status}', [TicketController::class, 'updateAgent'])->name('ticket.update.agent');
+    Route::post('/Ticket-User/update/{id}/{status}', [TicketController::class, 'updateUser'])->name('ticket.update.user');
+    Route::get('/Message-User/{ticketId}', [MessageController::class, 'createUser'])->name('message.user');
+    Route::get('/Message-Agent/{ticketId}', [MessageController::class, 'createAgent'])->name('message.agent');
+    Route::post('/Message-Agent/update/{id}', [MessageController::class, 'updateAgent'])->name('message.update.agent');
+    Route::post('/Message-User/update/{id}', [MessageController::class, 'updateUser'])->name('message.update.user');
+    Route::post('/Message-Form/store', [MessageController::class, 'store'])->name('message.store');
+});
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

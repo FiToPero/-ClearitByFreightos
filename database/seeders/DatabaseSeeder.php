@@ -4,6 +4,10 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Models\Role;
+use App\Models\Permission;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,11 +16,35 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        $user = Role::create(['name' => 'user']);
+        $agent = Role::create(['name' => 'agent']);
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        Permission::create(['name' => 'user']);
+        Permission::create(['name' => 'agent']);
+
+        $user->permissions()->attach(Permission::whereIn('name', ['user'])->pluck('id'));
+        $agent->permissions()->attach(Permission::whereIn('name', ['agent'])->pluck('id'));
+
+
+        User::create([
+            'role_id' => 1,
+            'name' => 'Test_user_role',
+            'email' => 'test01@example.com',
+            'password' => Hash::make('12345678'),
+            'email_verified_at' => now(),
+        ]);
+
+        User::create([
+            'role_id' => 2,
+            'name' => 'Test_agent_role',
+            'email' => 'test02@example.com',
+            'password' => Hash::make('12345678'),
+            'email_verified_at' => now(),
+        ]);
+
+
+
+        // \App\Models\User::factory(10)->create();
     }
+
 }
