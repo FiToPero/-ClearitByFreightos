@@ -40,7 +40,7 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('ticket.create');
         } elseif ($user->role_id == 2) {
             $this->authorize('agent', User::class);
-            return redirect()->route('ticket.edit');
+            return redirect()->route('ticket.agent');
         } 
     }
 
